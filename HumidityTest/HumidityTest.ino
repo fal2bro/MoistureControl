@@ -15,8 +15,10 @@ DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
   Serial.begin(9600); 
-  Serial.println("DHTxx test!");
- 
+  Serial.print("Humidity[%]");
+  Serial.print(",");
+  Serial.print("Temp[C]");
+  Serial.println();
   dht.begin();
 }
 

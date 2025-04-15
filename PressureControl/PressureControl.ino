@@ -18,14 +18,14 @@ const float pressureMin = 0.0; // kPa
 const float pressureMax = 1000.0; // kPa
 
 // P制御
-float targetPressure = 1.0;  // 目標圧力（kPa）
-float Kp = 0.5;                // 比例ゲイン
+float targetPressure = 1.2;  // 目標圧力（kPa）
+float Kp = 1;                // 比例ゲイン
 
 void setup() {
   pinMode(In1, OUTPUT);
   pinMode(In2, OUTPUT);
   
-  dht.begin()
+  //dht.begin()
   Serial.begin(9600);
 }
 
@@ -37,11 +37,7 @@ void loop() {
   // Read temperature as Celsius
   //float t = dht.readTemperature();
   
-  // Check if any reads failed and exit early (to try again).
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Failed to read from DHT sensor!");
-    return;
-  }
+
 
   // アナログ読み取り（0〜1023）
   int sensorValue = analogRead(pressureSensorPin);
@@ -57,15 +53,17 @@ void loop() {
 
   // PWM出力の計算（P制御）
   int pwmValue = constrain(Kp * error, 0, 255);
-  analogWrite(pwmPin, pwmValue);
+  digitalWrite(In2,LOW);
+  analogWrite(In1, pwmValue);
 
   // デバッグ出力
   Serial.print("Pressure (kPa): ");
   Serial.print(pressure);
   Serial.print(" | PWM: ");
   Serial.println(pwmValue);
+  Serial.println(error);
 
-  delay(100); // 更新周期
+  delay(5000); // 更新周期
 }
 
 // 電圧→圧力（kPa）変換関数

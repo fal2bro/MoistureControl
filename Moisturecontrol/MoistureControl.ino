@@ -18,15 +18,17 @@ const float pressureMin = 0.0; // kPa
 const float pressureMax = 1000.0; // kPa
 
 // P制御
-float targetPressure = 1.0;  // 目標圧力（kPa）
-float Kp = 0.5;                // 比例ゲイン
+float targetHumid = 55.0 ;  // 目標圧力（kPa）
+float Kp = 2.55;                // 比例ゲイン 湿度範囲が0~100なので、これを0~255にスケーリング
+const float pressureLimit = 3.0;
 
 void setup() {
   pinMode(In1, OUTPUT);
   pinMode(In2, OUTPUT);
   
-  dht.begin()
+  dht.begin();
   Serial.begin(9600);
+  digitalWrite(In2,LOW);
 }
 
 void loop() {
@@ -53,11 +55,14 @@ void loop() {
   float pressure = mapVoltageToPressure(voltage);
 
   // 誤差計算
-  float error = targetPressure - pressure;
+  float error = targetHumid - h; //0~100
 
   // PWM出力の計算（P制御）
   int pwmValue = constrain(Kp * error, 0, 255);
-  analogWrite(pwmPin, pwmValue);
+  if (pressure >= pressureLimit){
+    pwmValue = 0;
+  }
+  analogWrite(In1, pwmValue);
 
   // デバッグ出力
   Serial.print("Pressure (kPa): ");
